@@ -55,7 +55,7 @@ public class PushConsumerRunner extends BaseConsumerSupport implements AutoClose
                 .filterSubject(def.getFilterSubject());
 
         if (pushSettings.isFlowControl()) {
-            ccb.flowControl(true).idleHeartbeat(Duration.ofMillis(pushSettings.getIdleHeartbeatMs()));
+            ccb.flowControl(pushSettings.getIdleHeartbeatMs());
         }
 
         ConsumerConfiguration cc = ccb.build();
