@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+nats:
+  servers: nats://localhost:4222
+
+  streams:
+    - name: business-stream
+      subjects:
+        - product.*
+        - order.*
+
+  defaults:
+    ack-wait-seconds: 30
+    max-deliver: 5
+    deliver-policy: all
+    pull:
+      batch: 20
+      max-wait-ms: 2000
+      worker-threads: 2
+      idle-sleep-ms: 200
+    push:
+      worker-threads: 4
+      flow-control: false
+
+  consumers:
+    - name: product-pull
+      stream: business-stream
+      mode: pull
+      durable: product-pull-durable
+      filter-subject: product.*
+      pull:
+        batch: 10
+        worker-threads: 2
+
+    - name: product-push
+      stream: business-stream
+      mode: push
+      durable: product-push-durable
+      filter-subject: product.*
+      push:
+        worker-threads: 4
+
+    - name: order-push-shared
+      stream: business-stream
+      mode: push
+      durable: order-push-durable
+      filter-subject: order.*
+      push:
+        queue-group: order-workers
+        worker-threads: 4
