@@ -2,6 +2,10 @@ server:
   port: 8080
 
 nats:
+
+  spring:
+    server: nats://localhost:4222
+
   servers: nats://localhost:4222
 
   streams:

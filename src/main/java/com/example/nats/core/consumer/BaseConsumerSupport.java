@@ -54,8 +54,9 @@ public abstract class BaseConsumerSupport {
                     (List<DomainEventHandler<DomainEvent>>) (List<?>) registry.getHandlers(event.getClass());
             if (handlers.isEmpty()) { msg.term(); return; }
 
-            int redelivery = 1;
-            try { redelivery = msg.metaData().getNumDelivered(); } catch (Exception ignore){}
+            long redelivery = 1;
+            try { redelivery = msg.metaData()
+                    .deliveredCount(); } catch (Exception ignore){}
 
             for (DomainEventHandler<DomainEvent> h : handlers) {
                 if (redelivery > 1) h.onRedelivery(event, redelivery);
@@ -63,7 +64,7 @@ public abstract class BaseConsumerSupport {
             }
             msg.ack();
         } catch (Exception ex) {
-            int delivered = 0; try { delivered = msg.metaData().getNumDelivered(); } catch (Exception ignore){}
+            long delivered = 0; try { delivered = msg.metaData().deliveredCount(); } catch (Exception ignore){}
             if (delivered >= effectiveMaxDeliver()) msg.term(); else msg.nak();
         }
     }

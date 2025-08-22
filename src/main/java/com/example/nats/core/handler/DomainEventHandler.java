@@ -5,5 +5,5 @@ import com.example.nats.core.event.DomainEvent;
 public interface DomainEventHandler<E extends DomainEvent> {
     Class<E> eventClass();
     void handle(E event) throws Exception;
-    default void onRedelivery(E event, int redeliveryCount) {}
+    default void onRedelivery(E event, long redeliveryCount) {}
 }
